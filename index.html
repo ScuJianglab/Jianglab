@@ -1,0 +1,544 @@
+<title>姜红课题组 Jiang Lab</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400;6..72,600&family=Inter:wght@400;500;600&family=Noto+Serif+SC:wght@500;700&family=Noto+Sans+SC:wght@400;500;700&display=swap">
+<style>
+/* Layout concept: a histology-slide palette (hematoxylin ink, eosin rose, picrosirius collagen amber).
+   Sticky bilingual header, a live stiffness schematic as the hero, then findings, directions, team, papers. */
+:root{
+  --bg:#F7F5F8; --surface:#FFFFFF; --ink:#1E1B3A; --muted:#5C5875; --line:#DDD8E6;
+  --hema:#2E2A6B; --on-hema:#FFFFFF; --hema-soft:#ECEAF6;
+  --eosin:#B8405C; --collagen:#A5601A; --collagen-soft:#F6ECDD;
+  --font-display:"Newsreader","Noto Serif SC",Georgia,"Songti SC",serif;
+  --font-body:"Inter","Noto Sans SC","PingFang SC","Microsoft YaHei",system-ui,sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#12102A; --surface:#1B1840; --ink:#EDEAF7; --muted:#A9A4C4; --line:#34305F;
+  --hema:#A9A3F0; --on-hema:#12102A; --hema-soft:#25225A;
+  --eosin:#F08AA0; --collagen:#E8A650; --collagen-soft:#33281F; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#12102A; --surface:#1B1840; --ink:#EDEAF7; --muted:#A9A4C4; --line:#34305F;
+  --hema:#A9A3F0; --on-hema:#12102A; --hema-soft:#25225A;
+  --eosin:#F08AA0; --collagen:#E8A650; --collagen-soft:#33281F; color-scheme:dark}
+
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--ink);font-family:var(--font-body);font-size:16px;line-height:1.7;margin:0}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:30;background:var(--surface)}
+a{color:var(--hema);text-underline-offset:3px}
+a:focus-visible,button:focus-visible{outline:3px solid var(--eosin);outline-offset:3px;border-radius:4px}
+h1,h2,h3{font-family:var(--font-display);font-weight:600;line-height:1.25;text-wrap:balance;margin:0}
+p{margin:0}
+.wrap{max-width:1120px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+[data-lang="zh"] .en{display:none!important}
+[data-lang="en"] .zh{display:none!important}
+
+/* header */
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--surface);border-bottom:1px solid var(--line)}
+.top .wrap{display:flex;align-items:center;gap:20px;min-height:60px;flex-wrap:wrap;padding-block:8px}
+.brand{font-family:var(--font-display);font-weight:600;font-size:1.15rem;color:var(--ink);text-decoration:none;display:flex;align-items:baseline;gap:10px}
+.brand small{font-family:var(--font-body);font-size:.72rem;color:var(--muted);letter-spacing:.02em;line-height:1.25;max-width:21em}
+nav{display:flex;gap:4px;margin-left:auto;overflow-x:auto;max-width:100%}
+nav a{padding:6px 12px;border-radius:6px;text-decoration:none;color:var(--muted);font-size:.92rem;white-space:nowrap}
+nav a:hover{color:var(--ink);background:var(--hema-soft)}
+.lang{border:1px solid var(--line);background:transparent;color:var(--ink);border-radius:6px;padding:6px 12px;font:500 .85rem var(--font-body);cursor:pointer}
+.lang:hover{background:var(--hema-soft)}
+
+/* hero */
+.hero{padding-block:56px 48px;border-bottom:1px solid var(--line)}
+.hero .wrap{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);gap:48px;align-items:center}
+.eyebrow{font-size:.78rem;letter-spacing:.1em;text-transform:uppercase;color:var(--eosin);font-weight:600;margin-bottom:16px}
+.hero h1{font-size:clamp(2rem,4.2vw,3.1rem);margin-bottom:20px}
+.hero .lead{color:var(--muted);font-size:1.08rem;max-width:34em;margin-bottom:28px}
+.cta{display:flex;gap:12px;flex-wrap:wrap}
+.btn{display:inline-block;padding:11px 20px;border-radius:8px;text-decoration:none;font-weight:600;font-size:.95rem;border:1px solid var(--hema)}
+.btn.primary{background:var(--hema);color:var(--on-hema)}
+.btn.ghost{color:var(--hema)}
+.btn:hover{filter:brightness(1.08)}
+
+/* stiffness schematic */
+.viz{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px;min-width:0}
+.viz svg{width:100%;height:auto;display:block}
+.viz-ctrl{display:flex;gap:8px;margin:10px 0 8px}
+.viz-ctrl button{flex:1;border:1px solid var(--line);background:transparent;color:var(--muted);padding:8px 10px;border-radius:8px;font:500 .88rem var(--font-body);cursor:pointer}
+.viz-ctrl button[aria-pressed="true"]{background:var(--hema);color:var(--on-hema);border-color:var(--hema)}
+.viz-cap{font-size:.9rem;color:var(--muted);min-height:3.2em}
+.viz-note{font-size:.75rem;color:var(--muted);opacity:.85;margin-top:6px}
+.fib{stroke:var(--collagen);fill:none;stroke-linecap:round;transition:opacity .5s}
+.fib-dense{opacity:0}.fib-sparse{opacity:.85}
+.viz[data-state="stiff"] .fib-dense{opacity:.95}
+.viz[data-state="stiff"] .fib-sparse{opacity:.25}
+.cell-body{fill:var(--hema-soft);stroke:var(--hema);stroke-width:2.5}
+.cell-nuc{fill:var(--hema);opacity:.85}
+.tcell{fill:var(--surface);stroke:var(--eosin);stroke-width:2.5;transition:transform .7s cubic-bezier(.3,.7,.2,1)}
+.tcell-dot{fill:var(--eosin);transition:transform .7s cubic-bezier(.3,.7,.2,1)}
+.t1{transform:translate(-95px,22px)}.t2{transform:translate(-150px,-20px)}.t3{transform:translate(-120px,-58px)}
+.viz[data-state="stiff"] .t1,.viz[data-state="stiff"] .t2,.viz[data-state="stiff"] .t3{transform:translate(0,0)}
+.node{fill:var(--surface);stroke:var(--hema);stroke-width:2}
+.node-t{font:600 11px var(--font-body);fill:var(--hema)}
+.pulse{opacity:0;transition:opacity .4s}
+.viz[data-state="stiff"] .pulse{opacity:1;animation:pulse 1.8s ease-in-out infinite}
+@keyframes pulse{50%{stroke-opacity:.25}}
+.pulse{stroke:var(--eosin);stroke-width:3;fill:none}
+.lbl{font:500 11px var(--font-body);fill:var(--muted)}
+@media (prefers-reduced-motion:reduce){.viz[data-state="stiff"] .pulse{animation:none}.tcell,.tcell-dot,.fib{transition:none}html{scroll-behavior:auto}}
+
+/* sections */
+section{padding-block:72px;scroll-margin-top:calc(70px + env(safe-area-inset-top,0px))}
+section+section{border-top:1px solid var(--line)}
+.sec-head{margin-bottom:36px;max-width:42em}
+.sec-head h2{font-size:clamp(1.6rem,3vw,2.2rem);margin-bottom:12px}
+.sec-head p{color:var(--muted)}
+
+/* PI statement */
+.pi{display:grid;grid-template-columns:minmax(0,320px) minmax(0,1fr);gap:40px;align-items:start}
+.pi-card{background:var(--hema);color:var(--on-hema);border-radius:14px;padding:28px}
+.pi-photo{display:block;width:96px;height:96px;border-radius:50%;object-fit:cover;border:3px solid rgba(255,255,255,.35);margin-bottom:16px}
+.avatar.photo{padding:0;overflow:hidden;background:none}
+.avatar.photo img{display:block;width:100%;height:100%;object-fit:cover;border-radius:inherit}
+.pi-card h3{font-size:1.6rem;margin-bottom:4px}
+.pi-card p{opacity:.9;font-size:.95rem}
+.pi-card .tag{display:inline-block;margin-top:16px;font-size:.78rem;border:1px solid currentColor;border-radius:99px;padding:3px 12px;opacity:.9}
+.hcr{display:block;margin-top:16px;font-size:.82rem;font-weight:600;background:var(--collagen-soft);color:var(--collagen);padding:6px 12px;border-radius:8px;line-height:1.5}
+.rid{display:block;margin-top:10px;font-size:.78rem;color:inherit;opacity:.85;text-decoration:underline;text-underline-offset:3px}
+.pi-text p+p{margin-top:14px}
+.pi-text{color:var(--ink)}
+
+/* timeline of findings */
+.tl{display:grid;gap:20px}
+.paper{display:grid;grid-template-columns:110px minmax(0,1fr);gap:28px;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:26px}
+.paper .yr{font-family:var(--font-display);font-size:2.4rem;font-weight:600;color:var(--hema);line-height:1}
+.paper .jr{font-weight:600;margin-bottom:2px}
+.paper .cite{font-size:.85rem;color:var(--muted);margin-bottom:12px}
+.paper h3{font-size:1.2rem;margin-bottom:10px}
+.paper .mech{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.chip{font-size:.8rem;padding:3px 12px;border-radius:99px;background:var(--hema-soft);color:var(--hema);font-weight:500}
+.chip.hot{background:var(--collagen-soft);color:var(--collagen)}
+.hcp{display:inline-block;font-size:.78rem;color:var(--collagen);background:var(--collagen-soft);padding:2px 10px;border-radius:6px;margin-top:12px;font-weight:600}
+.cover{margin:0;background:#fff;border:1px solid var(--line);border-radius:14px;padding:10px}
+.cover img{display:block;width:100%;height:auto;border-radius:8px}
+.cover figcaption{font-size:.78rem;color:var(--muted);margin:8px 4px 2px}
+.life{display:flex;gap:20px;align-items:flex-end;flex-wrap:wrap}
+.life figure{margin:0}
+.life img{display:block;height:300px;width:auto;max-width:100%;border-radius:12px;border:1px solid var(--line)}
+.life figcaption{font-size:.82rem;color:var(--muted);margin-top:8px}
+@media (max-width:560px){.life img{height:auto;width:100%}.life figure{width:100%}}
+.era{margin:0;padding:12px 16px;border-top:1px solid var(--line);background:var(--hema-soft);color:var(--hema);font-size:.88rem;font-weight:600;border-radius:8px;margin-top:12px}
+.fig{margin:16px 0 0}
+.fig img{display:block;width:100%;height:auto;background:#fff;border:1px solid var(--line);border-radius:10px}
+.fig figcaption{font-size:.78rem;color:var(--muted);margin-top:6px}
+.dfig{margin:0 0 16px}
+.paper.latest{border-color:var(--hema);box-shadow:0 0 0 1px var(--hema)}
+
+/* axis */
+.axis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:0;margin-top:44px}
+.step{padding:20px 20px 20px 0;position:relative}
+.step:not(:last-child)::after{content:"→";position:absolute;right:6px;top:18px;color:var(--eosin);font-size:1.3rem}
+.step b{display:block;font-family:var(--font-display);font-size:1.15rem;margin-bottom:6px}
+.step span{color:var(--muted);font-size:.92rem;display:block}
+
+/* directions */
+.dir{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px}
+.dcard{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:26px}
+.dcard h3{font-size:1.2rem;margin-bottom:10px}
+.dcard p{color:var(--muted);font-size:.95rem}
+.dcard .k{font-size:.78rem;letter-spacing:.08em;text-transform:uppercase;color:var(--eosin);font-weight:600;margin-bottom:10px}
+.methods{display:flex;flex-wrap:wrap;gap:8px;margin-top:28px}
+
+/* team */
+.team{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px}
+.member{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:22px;min-width:0}
+.member.pi-m{border:1px solid var(--hema);border-style:solid}
+.avatar{width:56px;height:56px;border-radius:50%;background:var(--hema-soft);color:var(--hema);display:grid;place-items:center;font-family:var(--font-display);font-weight:600;font-size:1.3rem;margin-bottom:14px}
+.member h3{font-size:1.05rem;margin-bottom:2px}
+.member p{font-size:.88rem;color:var(--muted)}
+.todo{font-size:.78rem;color:var(--collagen);margin-top:8px}
+
+/* pubs */
+.pub{display:grid;grid-template-columns:70px minmax(0,1fr);gap:18px;padding:18px 0;border-top:1px solid var(--line)}
+.pub:last-child{border-bottom:1px solid var(--line)}
+.pub .y{font-family:var(--font-display);font-weight:600;color:var(--hema);font-size:1.2rem}
+.pub .t{font-weight:600}
+.pub .m{font-size:.9rem;color:var(--muted)}
+
+
+.scholar{margin-top:16px}
+.years{display:grid;gap:8px}
+.metrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0;background:var(--surface);border:1px solid var(--line);border-radius:14px;margin-bottom:36px}
+.metric{padding:22px 24px;min-width:0}
+.metric+.metric{border-left:1px solid var(--line)}
+.metric .n{font-family:var(--font-display);font-size:2.4rem;font-weight:600;color:var(--hema);line-height:1.1;font-variant-numeric:tabular-nums}
+.metric .l{font-size:.85rem;color:var(--muted);margin-top:4px}
+.metric .s{font-size:.85rem;color:var(--ink);margin-top:10px;padding-top:10px;border-top:1px solid var(--line);font-variant-numeric:tabular-nums}
+.msrc{font-size:.78rem;color:var(--muted);margin:-24px 0 32px}
+.chartbox{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:20px 20px 12px;margin-bottom:36px;min-width:0}
+.chartbox h3{font-size:1.05rem;margin-bottom:12px}
+.chartscroll{overflow-x:auto}
+.chartbox .cnote{font-size:.78rem;color:var(--muted);margin-top:8px}
+@media (max-width:600px){.metrics{grid-template-columns:minmax(0,1fr)}.metric+.metric{border-left:0;border-top:1px solid var(--line)}}
+.yg{display:grid;grid-template-columns:110px minmax(0,1fr);gap:28px;padding:22px 0;border-top:1px solid var(--line)}
+.yh{font-family:var(--font-display);font-size:1.7rem;color:var(--hema);line-height:1.1}
+.yl{display:grid;gap:14px;min-width:0}
+.pub{display:flex;justify-content:space-between;gap:16px;padding:0;border:0}
+.pub:last-child{border:0}
+.pub .t.tbd{color:var(--muted);font-weight:500}
+.pub .bd{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end;align-content:flex-start;flex:none}
+.corr{font-size:.75rem;color:var(--hema);background:var(--hema-soft);padding:2px 10px;border-radius:6px;font-weight:600;white-space:nowrap}
+.cn{font-size:.78rem;color:var(--ink);border:1px solid var(--line);padding:2px 10px;border-radius:6px;white-space:nowrap;font-variant-numeric:tabular-nums}
+.cn b{font-weight:600}
+.hcp.sm{margin-top:0;font-size:.75rem;padding:2px 10px;white-space:nowrap}
+@media (max-width:860px){.yg{grid-template-columns:minmax(0,1fr);gap:10px}.pub{flex-direction:column;gap:6px}.pub .bd{justify-content:flex-start}}
+
+/* contact */
+.contact{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px}
+.cbox{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:26px}
+.cbox h3{font-size:1.15rem;margin-bottom:10px}
+.cbox p{color:var(--muted);font-size:.95rem}
+.cbox p+p{margin-top:6px}
+footer{border-top:1px solid var(--line);padding-block:32px;color:var(--muted);font-size:.85rem}
+footer .wrap{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+
+@media (max-width:860px){
+  .hero .wrap,.pi{grid-template-columns:minmax(0,1fr)}
+  .hero{padding-block:36px 36px}
+  .paper{grid-template-columns:minmax(0,1fr);gap:10px}
+  .axis{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .step:nth-child(2)::after{display:none}
+  .dir,.contact{grid-template-columns:minmax(0,1fr)}
+  section{padding-block:52px}
+  nav{order:3;width:100%;margin-left:0}
+  .lang{margin-left:auto}
+}
+</style>
+
+<div id="app" data-lang="zh">
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="#top">
+      <span class="zh">姜红课题组</span><span class="en">Jiang Lab</span>
+      <small class="zh">胰腺癌力感知–免疫微环境</small><small class="en">Mechano-immune microenvironment in pancreatic cancer</small>
+    </a>
+    <nav aria-label="sections">
+      <a href="#concept"><span class="zh">研究理念</span><span class="en">Concept</span></a>
+      <a href="#findings"><span class="zh">核心发现</span><span class="en">Key findings</span></a>
+      <a href="#directions"><span class="zh">研究方向</span><span class="en">Research</span></a>
+      <a href="#team"><span class="zh">团队</span><span class="en">Team</span></a>
+      <a href="#life"><span class="zh">课题组生活</span><span class="en">Lab life</span></a>
+      <a href="#pubs"><span class="zh">论文</span><span class="en">Publications</span></a>
+      <a href="#contact"><span class="zh">联系</span><span class="en">Contact</span></a>
+    </nav>
+    <button class="lang" id="langBtn" type="button" aria-label="Switch language"><span class="zh">English</span><span class="en">中文</span></button>
+  </div>
+</header>
+
+<main id="top">
+<div class="hero">
+  <div class="wrap">
+    <div>
+      <p class="eyebrow"><span class="zh">四川大学华西医院</span><span class="en">West China Hospital, Sichuan University</span></p>
+      <h1>
+        <span class="zh">解读力感知–免疫轴，<br>让胰腺癌的免疫“冷”微环境重新“热”起来</span>
+        <span class="en">Decoding the mechano-immune tumor microenvironment to turn immune-cold pancreatic cancer hot</span>
+      </h1>
+      <p class="lead">
+        <span class="zh">胰腺癌组织异常变硬。我们研究细胞力感受器 FAK 与 PYK2 如何感知这种力学变化、塑造免疫抑制微环境，并据此开发新的免疫治疗策略。</span>
+        <span class="en">Pancreatic tumors become abnormally stiff. We study how the cellular force sensors FAK and PYK2 read this mechanical change, shape the immunosuppressive microenvironment, and how that knowledge can drive new immunotherapies.</span>
+      </p>
+      <div class="cta">
+        <a class="btn primary" href="#findings"><span class="zh">查看核心发现</span><span class="en">See key findings</span></a>
+        <a class="btn ghost" href="#directions"><span class="zh">研究方向</span><span class="en">Research directions</span></a>
+      </div>
+    </div>
+
+    <figure class="viz cover" id="viz">
+      <img src="img/cover.jpg" alt="Schematic: mechanical and immune microenvironment in normal pancreas versus PDAC, with four research questions (Q1–Q4)">
+      <figcaption><span class="zh">示意图：正常胰腺与胰腺癌的力学–免疫微环境，以及四个研究问题（Q1–Q4）。</span><span class="en">Schematic: the mechanical and immune microenvironment of normal pancreas versus PDAC, and the four research questions (Q1–Q4).</span></figcaption>
+    </figure>
+  </div>
+</div>
+
+<section id="concept">
+  <div class="wrap">
+    <div class="sec-head">
+      <h2><span class="zh">从组织变硬，到免疫抑制</span><span class="en">From tissue stiffness to immune suppression</span></h2>
+      <p><span class="zh">胰腺癌的特征是致密的纤维化间质。课题组把“力”看作影响免疫细胞命运的信号，沿这条轴线研究机制并寻找干预点。</span>
+         <span class="en">Pancreatic cancer is defined by a dense fibrotic stroma. We treat mechanical force as a signal that shapes immune-cell fate, and follow that axis from mechanism to intervention.</span></p>
+    </div>
+    <div class="pi">
+      <div class="pi-card">
+        <img class="pi-photo" src="img/pi.jpg" alt="姜红教授 Prof. Hong Jiang">
+        <h3><span class="zh">姜红 教授</span><span class="en">Prof. Hong Jiang, MD/PhD</span></h3>
+        <p><span class="zh">课题负责人</span><span class="en">Principal Investigator</span></p>
+        <p><span class="zh">四川大学华西医院</span><span class="en">West China Hospital, Sichuan University</span></p>
+        <span class="hcr"><span class="zh">科睿唯安“全球高被引科学家”（交叉领域）· 2021、2022、2023、2025</span><span class="en">Clarivate Highly Cited Researcher (Cross-Field) · 2021, 2022, 2023, 2025</span></span>
+        <a class="rid" href="https://www.webofscience.com/wos/author/record/AAE-1145-2019" target="_blank" rel="noopener">Web of Science ResearcherID: AAE-1145-2019 ↗</a>
+        <a class="rid" href="https://orcid.org/0000-0001-9481-9807" target="_blank" rel="noopener">ORCID: 0000-0001-9481-9807 ↗</a>
+        <span class="tag"><span class="zh">FAK / PYK2 · 力感受器 · 免疫微环境</span><span class="en">FAK / PYK2 · mechanosensing · immune microenvironment</span></span>
+      </div>
+      <div class="pi-text">
+        <p><span class="zh">姜红教授长期聚焦胰腺癌的力感受器 FAK/PYK2，先后在 Nature Medicine（2016）、Gut（2020）和 Cancer Discovery（2025）发表代表性研究，揭示力感受器如何调控胰腺癌的间质与免疫抑制微环境。</span>
+           <span class="en">Prof. Jiang has long focused on the force sensors FAK and PYK2 in pancreatic cancer. Representative work in Nature Medicine (2016), Gut (2020) and Cancer Discovery (2025) shows how these sensors govern the stroma and the immunosuppressive microenvironment.</span></p>
+        <p><span class="zh">这些工作从“抑制 FAK 使肿瘤对免疫检查点治疗敏感”，到“FAK 抑制后的间质耗竭与耐药”，再到“PYK2 作为免疫机械力检查点调控单核细胞向巨噬细胞分化”，构成一条连贯的力感知–免疫研究主线。</span>
+           <span class="en">The line runs from FAK inhibition sensitizing tumors to checkpoint immunotherapy, to stromal depletion and resistance after FAK inhibition, to PYK2 acting as an immunomechanical checkpoint that governs monocyte-to-macrophage differentiation.</span></p>
+        <p><span class="zh">姜红教授于 2021、2022、2023 和 2025 年入选科睿唯安“全球高被引科学家”（交叉领域）。</span>
+           <span class="en">Prof. Jiang was named a Clarivate Highly Cited Researcher (Cross-Field) in 2021, 2022, 2023 and 2025.</span></p>
+        <p><span class="zh">学科方向涵盖肿瘤学、免疫学、研究与实验医学、胃肠病学与肝病学。姜红博士曾在四川大学、华盛顿大学圣路易斯分校（WUSTL）、路易斯维尔大学、南京医科大学和路易斯维尔退伍军人医疗中心学习和工作。</span>
+           <span class="en">Subject areas: oncology, immunology, research and experimental medicine, and gastroenterology and hepatology. Dr. Hong Jiang studied and worked at Sichuan University, Washington University in St. Louis (WUSTL), the University of Louisville, Nanjing Medical University and the Louisville VA Medical Center.</span></p>
+      </div>
+    </div>
+    <div class="axis">
+      <div class="step"><b><span class="zh">基质变硬</span><span class="en">Matrix stiffens</span></b><span><span class="zh">胶原沉积，组织力学异常</span><span class="en">Collagen deposition, abnormal tissue mechanics</span></span></div>
+      <div class="step"><b><span class="zh">力感受</span><span class="en">Force sensing</span></b><span><span class="zh">FAK / PYK2 在细胞中被激活</span><span class="en">FAK / PYK2 activated in cells</span></span></div>
+      <div class="step"><b><span class="zh">免疫抑制</span><span class="en">Immune suppression</span></b><span><span class="zh">抑制性细胞增多，T 细胞被排斥</span><span class="en">More suppressive cells, T-cell exclusion</span></span></div>
+      <div class="step"><b><span class="zh">靶向逆转</span><span class="en">Targeted reversal</span></b><span><span class="zh">阻断力感受器，联合免疫治疗</span><span class="en">Block the sensors, combine with immunotherapy</span></span></div>
+    </div>
+  </div>
+</section>
+
+<section id="findings">
+  <div class="wrap">
+    <div class="sec-head">
+      <h2><span class="zh">核心发现</span><span class="en">Key findings</span></h2>
+      <p><span class="zh">姜红教授在 FAK/PYK2 力感受器、RIPK2 靶点与胰腺癌微环境方面的四项代表性工作。</span>
+         <span class="en">Four representative studies by Prof. Jiang on the FAK/PYK2 force sensors, the RIPK2 target and the pancreatic cancer microenvironment.</span></p>
+    </div>
+    <div class="tl">
+      <article class="paper">
+        <div class="yr">2016</div>
+        <div>
+          <p class="jr">Nature Medicine</p>
+          <p class="cite">22(8):851–860</p>
+          <h3><span class="zh">抑制细胞力感受器 FAK，使胰腺癌对检查点免疫治疗敏感</span><span class="en">Inhibiting the force sensor FAK makes pancreatic cancer responsive to checkpoint immunotherapy</span></h3>
+          <p class="zh">抑制 FAK 可减轻肿瘤纤维化，减少免疫抑制细胞，促进 CD8⁺ T 细胞进入肿瘤，使原本对检查点抑制剂不敏感的胰腺癌获得响应。</p>
+          <p class="en">FAK inhibition reduces fibrosis and immunosuppressive cells and lets CD8⁺ T cells enter the tumor, so a cancer that ignored checkpoint blockade starts to respond.</p>
+          <div class="mech"><span class="chip">FAK</span><span class="chip"><span class="zh">纤维化间质</span><span class="en">Fibrotic stroma</span></span><span class="chip hot"><span class="zh">联合检查点治疗</span><span class="en">+ checkpoint therapy</span></span></div>
+          <figure class="fig "><img src="img/f2016.jpg" alt="FAK 抑制剂联合抗 PD-1：纤维化减轻，CD8⁺ T 细胞浸润" loading="lazy"><figcaption class="zh">示意图：FAK 抑制剂联合抗 PD-1：纤维化减轻，CD8⁺ T 细胞浸润</figcaption><figcaption class="en">Schematic: FAK inhibitor plus anti-PD-1: less fibrosis, CD8⁺ T-cell infiltration</figcaption></figure>
+          <p style="margin-top:14px"><a href="https://www.nature.com/articles/nm.4123" target="_blank" rel="noopener"><span class="zh">阅读原文 ↗</span><span class="en">Read the paper ↗</span></a></p>
+          <span class="hcp"><span class="zh">Google Scholar 引用 1,237 次 · 入选科睿唯安 ESI 高被引论文</span><span class="en">1,237 citations (Google Scholar) · Clarivate ESI Highly Cited Paper</span></span>
+        </div>
+      </article>
+      <article class="paper">
+        <div class="yr">2020</div>
+        <div>
+          <p class="jr">Gut</p>
+          <p class="cite">69(1):122–132</p>
+          <h3><span class="zh">FAK 抑制致间质耗竭，经 STAT3 产生耐药</span><span class="en">FAK inhibition depletes the stroma, and resistance arises through STAT3</span></h3>
+          <p class="zh">长期抑制 FAK 会引起间质耗竭，肿瘤通过 STAT3 信号产生耐药；联合 JAK/STAT3 抑制剂后，抑瘤效果更持久。</p>
+          <p class="en">Prolonged FAK inhibition depletes the stroma and tumors escape through STAT3 signaling. Adding a JAK/STAT3 inhibitor gives a more durable response.</p>
+          <div class="mech"><span class="chip">FAK</span><span class="chip">STAT3</span><span class="chip hot"><span class="zh">FAK + JAK/STAT3 联合</span><span class="en">FAK + JAK/STAT3 combination</span></span></div>
+          <figure class="fig "><img src="img/f2020.jpg" alt="FAK 抑制导致间质耗竭，经 JAK/STAT3 耐药，联合抑制后控制肿瘤" loading="lazy"><figcaption class="zh">示意图：FAK 抑制导致间质耗竭，经 JAK/STAT3 耐药，联合抑制后控制肿瘤</figcaption><figcaption class="en">Schematic: FAK inhibition depletes stroma, resistance via JAK/STAT3, combined inhibition controls the tumor</figcaption></figure>
+          <p style="margin-top:14px"><a href="https://pubmed.ncbi.nlm.nih.gov/31076405/" target="_blank" rel="noopener"><span class="zh">阅读原文 ↗</span><span class="en">Read the paper ↗</span></a></p>
+          <span class="cn" style="display:inline-block;margin-top:12px"><span class="zh">Google Scholar 引用 147 次</span><span class="en">147 citations (Google Scholar)</span></span>
+        </div>
+      </article>
+      <article class="paper">
+        <div class="yr">2024</div>
+        <div>
+          <p class="jr">Cancer Discovery</p>
+          <p class="cite">14(2):326–347</p>
+          <h3><span class="zh">RIPK2 是胰腺癌的免疫治疗靶点</span><span class="en">RIPK2 is an immunotherapy target in pancreatic cancer</span></h3>
+          <p class="zh">在小鼠胰腺癌模型中，针对激酶和膜蛋白的 CRISPR 筛选发现，肿瘤细胞内的 RIPK2 驱动免疫逃逸。阻断 RIPK2 可恢复肿瘤细胞表面的 MHC-I，改善致密的纤维化间质，并提高抗 PD-1 治疗的效果。</p>
+          <p class="en">A CRISPR screen of kinases and membrane proteins in mouse pancreatic cancer models identified tumor-intrinsic RIPK2 as a driver of immune evasion. Blocking RIPK2 restores surface MHC-I, loosens the dense fibrotic stroma and improves the response to anti-PD-1 therapy.</p>
+          <div class="mech"><span class="chip">RIPK2</span><span class="chip">MHC-I</span><span class="chip">CRISPR <span class="zh">筛选</span><span class="en">screen</span></span><span class="chip hot"><span class="zh">联合抗 PD-1</span><span class="en">+ anti-PD-1</span></span></div>
+          <figure class="fig "><img src="img/f2024.jpg" alt="阻断 RIPK2 恢复 MHC-I，联合抗 PD-1" loading="lazy"><figcaption class="zh">示意图：阻断 RIPK2 恢复 MHC-I，联合抗 PD-1</figcaption><figcaption class="en">Schematic: Blocking RIPK2 restores MHC-I, with anti-PD-1</figcaption></figure>
+          <p style="margin-top:14px"><a href="https://aacrjournals.org/cancerdiscovery/article/14/2/326/734054/Receptor-interacting-Protein-Kinase-2-Is-an" target="_blank" rel="noopener"><span class="zh">阅读原文 ↗</span><span class="en">Read the paper ↗</span></a></p>
+          <span class="hcp"><span class="zh">Google Scholar 引用 70 次 · 入选科睿唯安 ESI 高被引论文</span><span class="en">70 citations (Google Scholar) · Clarivate ESI Highly Cited Paper</span></span>
+        </div>
+      </article>
+      <article class="paper latest">
+        <div class="yr">2025</div>
+        <div>
+          <p class="jr">Cancer Discovery</p>
+          <p class="cite">15(8):1740–1765</p>
+          <h3><span class="zh">PYK2 是免疫机械力检查点</span><span class="en">PYK2 is an immunomechanical checkpoint</span></h3>
+          <p class="zh">FAK 家族成员 PYK2 作为免疫机械力检查点，感知力学信号并调控单核细胞向巨噬细胞分化，从而影响胰腺癌的免疫抑制微环境。</p>
+          <p class="en">PYK2, a member of the FAK family, acts as an immunomechanical checkpoint. It senses mechanical cues and governs monocyte-to-macrophage differentiation, shaping the immunosuppressive microenvironment.</p>
+          <div class="mech"><span class="chip">PYK2</span><span class="chip"><span class="zh">单核细胞 → 巨噬细胞</span><span class="en">Monocyte → macrophage</span></span><span class="chip hot"><span class="zh">免疫机械力检查点</span><span class="en">Immunomechanical checkpoint</span></span></div>
+          <figure class="fig "><img src="img/f2025.jpg" alt="硬基质激活单核细胞 PYK2，驱动其分化为巨噬细胞" loading="lazy"><figcaption class="zh">示意图：硬基质激活单核细胞 PYK2，驱动其分化为巨噬细胞</figcaption><figcaption class="en">Schematic: Stiff matrix activates PYK2 in monocytes and drives macrophage differentiation</figcaption></figure>
+          <p style="margin-top:14px"><a href="https://aacrjournals.org/cancerdiscovery/article/15/8/1740/763862/The-Immunomechanical-Checkpoint-PYK2-Governs" target="_blank" rel="noopener"><span class="zh">阅读原文 ↗</span><span class="en">Read the paper ↗</span></a></p>
+          <span class="hcp"><span class="zh">Google Scholar 引用 55 次 · 入选科睿唯安 ESI 高被引论文</span><span class="en">55 citations (Google Scholar) · Clarivate ESI Highly Cited Paper</span></span>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section id="directions">
+  <div class="wrap">
+    <div class="sec-head">
+      <h2><span class="zh">研究方向：胰腺癌</span><span class="en">Research directions: pancreatic cancer</span></h2>
+      <p><span class="zh">四个方向都围绕胰腺导管腺癌（PDAC）：以临床问题为牵引，医工交叉，贯通从机制解析到治疗转化的全链条。</span>
+         <span class="en">All four directions focus on pancreatic ductal adenocarcinoma (PDAC): driven by clinical problems, built across medicine and engineering, and spanning the full chain from mechanism to therapy.</span></p>
+    </div>
+    <div class="dir">
+      <div class="dcard"><figure class="fig dfig"><img src="img/d1.jpg" alt="单细胞与空间组学：力学梯度、空间图谱、单细胞聚类" loading="lazy"><figcaption class="zh">示意图：单细胞与空间组学：力学梯度、空间图谱、单细胞聚类</figcaption><figcaption class="en">Schematic: Single-cell and spatial omics: stiffness gradient, spatial map, cell clusters</figcaption></figure><p class="k"><span class="zh">解析</span><span class="en">Decode</span></p>
+        <h3><span class="zh">胰腺癌力学–免疫空间图谱</span><span class="en">Mechano-immune tumor microenvironment spatial atlas of pancreatic cancer</span></h3>
+        <p><span class="zh">用单细胞与空间组学构建胰腺癌全病程力学–免疫空间图谱，定量力学梯度与免疫排斥、耗竭的关系，鉴定力学信号响应细胞。</span>
+           <span class="en">Single-cell and spatial profiling across the course of pancreatic cancer, quantifying how mechanical gradients relate to immune exclusion and exhaustion, and identifying force-responsive cells.</span></p></div>
+      <div class="dcard"><figure class="fig dfig"><img src="img/d2.jpg" alt="力学依赖性 CRISPR 筛选流程" loading="lazy"><figcaption class="zh">示意图：力学依赖性 CRISPR 筛选流程</figcaption><figcaption class="en">Schematic: Mechanics-dependent CRISPR screening workflow</figcaption></figure><p class="k"><span class="zh">发现</span><span class="en">Discover</span></p>
+        <h3><span class="zh">胰腺癌力学依赖性 CRISPR 筛选</span><span class="en">Mechanics-dependent CRISPR screening in pancreatic cancer</span></h3>
+        <p><span class="zh">在 KPC 胰腺癌转基因小鼠和人胰腺癌类器官模型中，比较软、硬基质下的 CRISPR 筛选，鉴定分子开关并验证作用机制。</span>
+           <span class="en">CRISPR screens on soft versus stiff matrices in KPC pancreatic cancer mouse models and human pancreatic cancer organoids to identify molecular switches and validate their mechanisms.</span></p></div>
+      <div class="dcard"><figure class="fig dfig"><img src="img/d3.jpg" alt="病理组学、AI 风险分层与临床干预" loading="lazy"><figcaption class="zh">示意图：病理组学、AI 风险分层与临床干预</figcaption><figcaption class="en">Schematic: Pathomics, AI risk stratification and clinical intervention</figcaption></figure><p class="k"><span class="zh">分层</span><span class="en">Stratify</span></p>
+        <h3><span class="zh">胰腺癌病理组学与风险分层</span><span class="en">Pathomics and risk stratification in pancreatic cancer</span></h3>
+        <p><span class="zh">建立胰腺癌力学微环境病理组学方法，构建力学–免疫风险分层模型，用分层结果指导胰腺癌患者的临床干预策略。</span>
+           <span class="en">A pathomics method for the mechanical microenvironment of pancreatic cancer, a mechano-immune tumor microenvironment risk model, and stratification-guided clinical intervention for patients.</span></p></div>
+      <div class="dcard"><figure class="fig dfig"><img src="img/d4.jpg" alt="工程化免疫细胞构建与验证流程" loading="lazy"><figcaption class="zh">示意图：工程化免疫细胞构建与验证流程</figcaption><figcaption class="en">Schematic: Engineered immune-cell construction and validation workflow</figcaption></figure><p class="k"><span class="zh">干预</span><span class="en">Intervene</span></p>
+        <h3><span class="zh">胰腺癌工程化免疫细胞</span><span class="en">Engineered immune cells for pancreatic cancer</span></h3>
+        <p><span class="zh">构建、优选并验证能适应胰腺癌力学微环境的工程化免疫细胞，推进细胞治疗。</span>
+           <span class="en">Building, selecting and validating engineered immune cells suited to the mechanical microenvironment of pancreatic cancer.</span></p></div>
+    </div>
+    <div class="methods" aria-label="methods">
+      <span class="chip">scRNA-seq</span><span class="chip"><span class="zh">空间转录组</span><span class="en">Spatial transcriptomics</span></span>
+      <span class="chip">AFM</span><span class="chip">CRISPR screen</span><span class="chip">KPC</span>
+      <span class="chip"><span class="zh">类器官</span><span class="en">Organoids</span></span>
+      <span class="chip"><span class="zh">数字病理 / AI</span><span class="en">Digital pathology / AI</span></span>
+      <span class="chip"><span class="zh">细胞工程</span><span class="en">Cell engineering</span></span>
+    </div>
+  </div>
+</section>
+
+<section id="team">
+  <div class="wrap">
+    <div class="sec-head">
+      <h2><span class="zh">团队</span><span class="en">Team</span></h2>
+      <p><span class="zh">欢迎对力学、免疫和胰腺癌感兴趣的同学与同行加入。</span><span class="en">Students and colleagues interested in mechanics, immunity and pancreatic cancer are welcome.</span></p>
+    </div>
+    <div class="team">
+      <div class="member pi-m"><div class="avatar photo"><img src="img/pi.jpg" alt="姜红教授 Prof. Hong Jiang"></div>
+        <h3><span class="zh">姜红 教授</span><span class="en">Prof. Hong Jiang, MD/PhD</span></h3>
+        <p><span class="zh">课题负责人，四川大学华西医院</span><span class="en">Principal Investigator, West China Hospital</span></p></div>
+      <div class="member"><div class="avatar photo"><img src="img/m_yan.jpg" alt="严馨睿 Xinrui Yan"></div>
+        <h3><span class="zh">严馨睿</span><span class="en">Xinrui Yan</span></h3>
+        <p><span class="zh">硕士研究生</span><span class="en">Master's student</span></p></div>
+      <div class="member"><div class="avatar photo"><img src="img/m_feng.jpg" alt="冯秀琴 Xiuqin Feng"></div>
+        <h3><span class="zh">冯秀琴</span><span class="en">Xiuqin Feng</span></h3>
+        <p><span class="zh">博士研究生</span><span class="en">PhD student</span></p></div>
+      <div class="member"><div class="avatar photo"><img src="img/m_xie.jpg" alt="谢文艳 Wenyan Xie"></div>
+        <h3><span class="zh">谢文艳</span><span class="en">Wenyan Xie</span></h3>
+        <p><span class="zh">博士后</span><span class="en">Postdoctoral fellow</span></p></div>
+      <div class="member"><div class="avatar photo"><img src="img/m_yu.jpg" alt="于欣 Xin Yu"></div>
+        <h3><span class="zh">于欣</span><span class="en">Xin Yu</span></h3>
+        <p><span class="zh">博士研究生</span><span class="en">PhD student</span></p></div>
+      <div class="member"><div class="avatar photo"><img src="img/m_wu1.jpg" alt="吴淳炜 Chunwei Wu"></div>
+        <h3><span class="zh">吴淳炜</span><span class="en">Chunwei Wu</span></h3>
+        <p><span class="zh">本科生</span><span class="en">Undergraduate student</span></p></div>
+      <div class="member"><div class="avatar photo"><img src="img/m_kong.jpg" alt="孔昊 Hao Kong"></div>
+        <h3><span class="zh">孔昊</span><span class="en">Hao Kong</span></h3>
+        <p><span class="zh">博士研究生</span><span class="en">PhD student</span></p></div>
+      <div class="member"><div class="avatar photo"><img src="img/m_wu2.jpg" alt="伍相佶 Xiangji Wu"></div>
+        <h3><span class="zh">伍相佶</span><span class="en">Xiangji Wu</span></h3>
+        <p><span class="zh">博士研究生</span><span class="en">PhD student</span></p></div>
+    </div>
+  </div>
+</section>
+
+<section id="life">
+  <div class="wrap">
+    <div class="sec-head">
+      <h2><span class="zh">课题组生活</span><span class="en">Lab life</span></h2>
+      <p><span class="zh">实验之外，我们也一起走走看看。</span>
+         <span class="en">Beyond the bench, we also get out and explore together.</span></p>
+    </div>
+    <div class="life">
+      <figure><img src="img/life1.jpg" alt="课题组成员在成都合影 Lab members group photo in Chengdu" loading="lazy"><figcaption><span class="zh">课题组外出活动，成都</span><span class="en">A lab outing in Chengdu</span></figcaption></figure>
+      <figure><img src="img/life3.jpg" alt="课题组成员自拍合影 Lab members group selfie" loading="lazy"><figcaption><span class="zh">课题组自拍合影</span><span class="en">Lab group selfie</span></figcaption></figure>
+      <figure><img src="img/life2.jpg" alt="课题组成员在钟楼前合影 Lab members group photo in front of a clock tower" loading="lazy"><figcaption><span class="zh">课题组合影</span><span class="en">Lab group photo</span></figcaption></figure>
+    </div>
+  </div>
+</section>
+
+<section id="pubs">
+  <div class="wrap">
+    <div class="sec-head">
+      <h2><span class="zh">论文</span><span class="en">Publications</span></h2>
+      <p><span class="zh">共收录 37 项（含 1 项美国专利）。按年份排列，包含课题负责人参与的全部论文；仅标注已确认的第一作者和通讯作者。</span>
+         <span class="en">37 entries (including 1 US patent), listed by year and covering all work Prof. Jiang took part in. Only confirmed first-author and corresponding-author roles are marked.</span></p>
+      <p class="scholar"><a class="btn ghost" href="https://scholar.google.com/citations?user=UyaIfEkAAAAJ&amp;hl=en" target="_blank" rel="noopener"><span class="zh">在 Google Scholar 查看引用数 ↗</span><span class="en">Citation counts on Google Scholar ↗</span></a></p>
+    </div>
+    <div class="metrics">
+      <div class="metric"><div class="n">7,767</div><div class="l"><span class="zh">总引用次数</span><span class="en">Total citations</span></div><div class="s"><span class="zh">2021 年以来</span><span class="en">Since 2021</span> · 5,691</div></div>
+      <div class="metric"><div class="n">25</div><div class="l">h-index</div><div class="s"><span class="zh">2021 年以来</span><span class="en">Since 2021</span> · 21</div></div>
+      <div class="metric"><div class="n">27</div><div class="l">i10-index</div><div class="s"><span class="zh">2021 年以来</span><span class="en">Since 2021</span> · 24</div></div>
+    </div>
+    <p class="msrc"><span class="zh">数据来源：Google Scholar，截至 2026 年 11 月 22 日。各篇被引次数同样取自 Google Scholar，暂未取得的不显示。PMID 为已核对的 PubMed 编号，标“PubMed 检索”的条目链接到按标题检索的 PubMed 结果页。</span><span class="en">Source: Google Scholar, as of 22 November 2026. Per-paper counts are from the same list; those not yet collected are left blank. "PMID" links are verified PubMed records; "PubMed search" links open a PubMed search by title.</span></p>
+    <div class="chartbox">
+      <h3><span class="zh">逐年被引次数</span><span class="en">Citations per year</span></h3>
+      <div class="chartscroll"><svg viewBox="0 0 720 250" role="img" aria-labelledby="ct" style="min-width:560px;width:100%;height:auto;display:block"><title id="ct">Citations per year, Google Scholar</title><line x1="44" x2="710" y1="216.0" y2="216.0" stroke="var(--line)" stroke-width="1"/><text x="36" y="220.0" text-anchor="end" font-size="11" fill="var(--muted)">0</text><line x1="44" x2="710" y1="165.5" y2="165.5" stroke="var(--line)" stroke-width="1"/><text x="36" y="169.5" text-anchor="end" font-size="11" fill="var(--muted)">375</text><line x1="44" x2="710" y1="115.0" y2="115.0" stroke="var(--line)" stroke-width="1"/><text x="36" y="119.0" text-anchor="end" font-size="11" fill="var(--muted)">750</text><line x1="44" x2="710" y1="64.5" y2="64.5" stroke="var(--line)" stroke-width="1"/><text x="36" y="68.5" text-anchor="end" font-size="11" fill="var(--muted)">1,125</text><line x1="44" x2="710" y1="14.0" y2="14.0" stroke="var(--line)" stroke-width="1"/><text x="36" y="18.0" text-anchor="end" font-size="11" fill="var(--muted)">1,500</text><rect x="54.2" y="204.6" width="30.7" height="11.4" rx="2" fill="var(--hema)"/><text x="69.6" y="236" text-anchor="middle" font-size="11" fill="var(--muted)">2014</text><rect x="105.5" y="197.0" width="30.7" height="19.0" rx="2" fill="var(--hema)"/><text x="120.8" y="236" text-anchor="middle" font-size="11" fill="var(--muted)">2015</text><rect x="156.7" y="193.2" width="30.7" height="22.8" rx="2" fill="var(--hema)"/><text x="172.1" y="236" text-anchor="middle" font-size="11" fill="var(--muted)">2016</text><rect x="207.9" y="179.2" width="30.7" height="36.8" rx="2" fill="var(--hema)"/><text x="223.3" y="236" text-anchor="middle" font-size="11" fill="var(--muted)">2017</text><rect x="259.2" y="172.9" width="30.7" height="43.1" rx="2" fill="var(--hema)"/><text x="274.5" y="236" text-anchor="middle" font-size="11" fill="var(--muted)">2018</text><rect x="310.4" y="165.4" width="30.7" height="50.6" rx="2" fill="var(--hema)"/><text x="325.8" y="236" text-anchor="middle" font-size="11" fill="var(--muted)">2019</text><rect x="361.6" y="150.1" width="30.7" height="65.9" rx="2" fill="var(--hema)"/><text x="377.0" y="236" text-anchor="middle" font-size="11" fill="var(--muted)">2020</text><rect x="412.9" y="128.6" width="30.7" height="87.4" rx="2" fill="var(--hema)"/><text x="428.2" y="236" text-anchor="middle" font-size="11" fill="var(--muted)">2021</text><rect x="464.1" y="129.8" width="30.7" height="86.2" rx="2" fill="var(--hema)"/><text x="479.5" y="236" text-anchor="middle" font-size="11" fill="var(--muted)">2022</text><rect x="515.3" y="108.4" width="30.7" height="107.6" rx="2" fill="var(--hema)"/><text x="530.7" y="236" text-anchor="middle" font-size="11" fill="var(--muted)">2023</text><rect x="566.6" y="74.2" width="30.7" height="141.8" rx="2" fill="var(--hema)"/><text x="581.9" y="236" text-anchor="middle" font-size="11" fill="var(--muted)">2024</text><rect x="617.8" y="64.1" width="30.7" height="151.9" rx="2" fill="var(--hema)"/><text x="633.2" y="236" text-anchor="middle" font-size="11" fill="var(--muted)">2025</text><rect x="669.0" y="27.3" width="30.7" height="188.7" rx="2" fill="var(--hema)" fill-opacity=".5"/><text x="684.4" y="236" text-anchor="middle" font-size="11" fill="var(--muted)">2026</text></svg></div>
+      <p class="cnote"><span class="zh">柱高按 Google Scholar 的逐年图读取，为近似值。2026 年为当年至今（颜色较浅）。</span><span class="en">Bar heights are read from the Google Scholar chart and are approximate. 2026 is year to date (lighter bar).</span></p>
+    </div>
+    <div class="years">
+      <div class="yg"><h3 class="yh">2026</h3><div class="yl"><div class="pub"><div><p class="t">VSIG4 suppresses antitumor T cell immunity via the SLC3A2-dependent metabolic–ionic checkpoint</p><p class="m">Journal for ImmunoTherapy of Cancer 2026 · <a href="https://pubmed.ncbi.nlm.nih.gov/42259604/" target="_blank" rel="noopener">PMID 42259604 ↗</a></p></div><div class="bd"></div></div></div></div>
+      <div class="yg"><h3 class="yh">2025</h3><div class="yl"><div class="pub"><div><p class="t">Enhancing T cell function: innovations in cancer immunotherapy</p><p class="m">Frontiers in Immunology 2025;16:1615030 · <a href="https://pubmed.ncbi.nlm.nih.gov/40396175/" target="_blank" rel="noopener">PMID 40396175 ↗</a></p></div><div class="bd"><span class="cn"><b>2</b> <span class="zh">被引</span><span class="en">citations</span></span><span class="corr"><span class="zh">通讯作者</span><span class="en">Corresponding author</span></span></div></div><div class="pub"><div><p class="t">The Immunomechanical Checkpoint PYK2 Governs Monocyte-to-Macrophage Differentiation in Pancreatic Cancer</p><p class="m">Cancer Discovery 2025;15(8):1740–1765 · <a href="https://aacrjournals.org/cancerdiscovery/article/15/8/1740/763862/The-Immunomechanical-Checkpoint-PYK2-Governs" target="_blank" rel="noopener">link ↗</a> · <a href="https://pubmed.ncbi.nlm.nih.gov/40338055/" target="_blank" rel="noopener">PMID 40338055 ↗</a></p></div><div class="bd"><span class="cn"><b>55</b> <span class="zh">被引</span><span class="en">citations</span></span><span class="corr"><span class="zh">通讯作者</span><span class="en">Corresponding author</span></span><span class="hcp sm"><span class="zh">ESI 高被引</span><span class="en">ESI Highly cited</span></span></div></div><div class="pub"><div><p class="t">Application of mechanical-force sensitive macrophage subset in pancreatic cancer diagnosis or prognosis evaluation</p><p class="m">US Patent US 12,365,901 B2</p></div><div class="bd"><span class="corr"><span class="zh">专利</span><span class="en">Patent</span></span></div></div><div class="pub"><div><p class="t">Regulatory T cell therapy promotes TGF-β and IL-6-dependent pro-inflammatory Th17 cell generation by reducing IL-2</p><p class="m">Nature Communications 2025;16(1) · <a href="https://pubmed.ncbi.nlm.nih.gov/40818959/" target="_blank" rel="noopener">PMID 40818959 ↗</a></p></div><div class="bd"><span class="cn"><b>41</b> <span class="zh">被引</span><span class="en">citations</span></span></div></div><div class="pub"><div><p class="t">High fructose consumption aggravates inflammation by promoting effector T cell generation via inducing metabolic reprogramming</p><p class="m">Signal Transduction and Targeted Therapy 2025;10(1):271 · <a href="https://pubmed.ncbi.nlm.nih.gov/40854873/" target="_blank" rel="noopener">PMID 40854873 ↗</a></p></div><div class="bd"><span class="cn"><b>28</b> <span class="zh">被引</span><span class="en">citations</span></span></div></div><div class="pub"><div><p class="t">Multimodal profiling identifies CD4+CXCR5+PD-1– Tfh cells as prognostic and predictive biomarkers in diffuse large B-cell lymphoma</p><p class="m">Chinese Medical Journal (English) 2025 · <a href="https://pubmed.ncbi.nlm.nih.gov/40968379/" target="_blank" rel="noopener">PMID 40968379 ↗</a></p></div><div class="bd"><span class="cn"><b>3</b> <span class="zh">被引</span><span class="en">citations</span></span><span class="corr"><span class="zh">通讯作者</span><span class="en">Corresponding author</span></span></div></div></div></div>
+      <div class="yg"><h3 class="yh">2024</h3><div class="yl"><div class="pub"><div><p class="t">Receptor-interacting protein kinase 2 is an immunotherapy target in pancreatic cancer</p><p class="m">Cancer Discovery 2024;14(2):326–347 · <a href="https://pubmed.ncbi.nlm.nih.gov/37824278/" target="_blank" rel="noopener">PMID 37824278 ↗</a></p></div><div class="bd"><span class="cn"><b>70</b> <span class="zh">被引</span><span class="en">citations</span></span><span class="corr"><span class="zh">通讯作者</span><span class="en">Corresponding author</span></span><span class="hcp sm"><span class="zh">ESI 高被引</span><span class="en">ESI Highly cited</span></span></div></div><div class="pub"><div><p class="t">Spatial context of immune checkpoints as predictors of overall survival in patients with resectable colorectal cancer independent of standard tumor–node–metastasis stages</p><p class="m">Cancer Research Communications 2024;4(11):3025–3035 · <a href="https://pubmed.ncbi.nlm.nih.gov/39485029/" target="_blank" rel="noopener">PMID 39485029 ↗</a></p></div><div class="bd"><span class="cn"><b>5</b> <span class="zh">被引</span><span class="en">citations</span></span><span class="corr"><span class="zh">通讯作者</span><span class="en">Corresponding author</span></span></div></div><div class="pub"><div><p class="t">Targeting extracellular matrix stiffness for cancer therapy</p><p class="m">Frontiers in Immunology 2024;15 · <a href="https://pubmed.ncbi.nlm.nih.gov/39697341/" target="_blank" rel="noopener">PMID 39697341 ↗</a></p></div><div class="bd"><span class="cn"><b>98</b> <span class="zh">被引</span><span class="en">citations</span></span><span class="corr"><span class="zh">通讯作者</span><span class="en">Corresponding author</span></span></div></div></div></div>
+      <div class="yg"><h3 class="yh">2023</h3><div class="yl"><div class="pub"><div><p class="t">Liquid-in-liquid printing of 3D and mechanically tunable conductive hydrogels</p><p class="m">Nature Communications 2023;14:4289 · <a href="https://pubmed.ncbi.nlm.nih.gov/37463898/" target="_blank" rel="noopener">PMID 37463898 ↗</a></p></div><div class="bd"><span class="cn"><b>186</b> <span class="zh">被引</span><span class="en">citations</span></span><span class="hcp sm"><span class="zh">ESI 高被引</span><span class="en">ESI Highly cited</span></span></div></div><div class="pub"><div><p class="t">Static and dynamic: evolving biomaterial mechanical properties to control cellular mechanotransduction</p><p class="m">Advanced Science 2023;10(9):2204594 · <a href="https://pubmed.ncbi.nlm.nih.gov/36658771/" target="_blank" rel="noopener">PMID 36658771 ↗</a></p></div><div class="bd"><span class="cn"><b>227</b> <span class="zh">被引</span><span class="en">citations</span></span><span class="hcp sm"><span class="zh">ESI 高被引</span><span class="en">ESI Highly cited</span></span></div></div></div></div>
+      <div class="yg"><h3 class="yh">2022</h3><div class="yl"><div class="pub"><div><p class="t">Pan-cancer single-cell analysis reveals the heterogeneity and plasticity of cancer-associated fibroblasts in the tumor microenvironment</p><p class="m">Nature Communications 2022;13(1):6619 · <a href="https://pubmed.ncbi.nlm.nih.gov/36333338/" target="_blank" rel="noopener">PMID 36333338 ↗</a></p></div><div class="bd"><span class="cn"><b>672</b> <span class="zh">被引</span><span class="en">citations</span></span><span class="hcp sm"><span class="zh">ESI 高被引</span><span class="en">ESI Highly cited</span></span></div></div><div class="pub"><div><p class="t">Stromal architecture directs early dissemination in pancreatic ductal adenocarcinoma</p><p class="m">JCI Insight 2022;7(3) · <a href="https://pubmed.ncbi.nlm.nih.gov/34914633/" target="_blank" rel="noopener">PMID 34914633 ↗</a></p></div><div class="bd"><span class="cn"><b>76</b> <span class="zh">被引</span><span class="en">citations</span></span></div></div></div></div>
+      <div class="era"><span class="zh">以下为独立课题组前发表（2021 年以前）</span><span class="en">Published before establishing the independent research group (before 2021)</span></div>
+      <div class="yg"><h3 class="yh">2020</h3><div class="yl"><div class="pub"><div><p class="t">Development of resistance to FAK inhibition in pancreatic cancer is linked to stromal depletion</p><p class="m">Gut 2020;69(1):122–132 · <a href="https://pubmed.ncbi.nlm.nih.gov/31076405/" target="_blank" rel="noopener">PMID 31076405 ↗</a></p></div><div class="bd"><span class="cn"><b>147</b> <span class="zh">被引</span><span class="en">citations</span></span><span class="corr"><span class="zh">第一作者</span><span class="en">First author</span></span></div></div></div></div>
+      <div class="yg"><h3 class="yh">2017</h3><div class="yl"><div class="pub"><div><p class="t">Tumor-associated fibrosis as a regulator of tumor immunity and response to immunotherapy</p><p class="m">Cancer Immunology, Immunotherapy 2017 · <a href="https://pubmed.ncbi.nlm.nih.gov/28451791/" target="_blank" rel="noopener">PMID 28451791 ↗</a></p></div><div class="bd"><span class="cn"><b>286</b> <span class="zh">被引</span><span class="en">citations</span></span><span class="corr"><span class="zh">第一作者</span><span class="en">First author</span></span></div></div></div></div>
+      <div class="yg"><h3 class="yh">2016</h3><div class="yl"><div class="pub"><div><p class="t">Targeting focal adhesion kinase renders pancreatic cancers responsive to checkpoint immunotherapy</p><p class="m">Nature Medicine 2016;22(8):851–860 · <a href="https://pubmed.ncbi.nlm.nih.gov/27376576/" target="_blank" rel="noopener">PMID 27376576 ↗</a></p></div><div class="bd"><span class="cn"><b>1,237</b> <span class="zh">被引</span><span class="en">citations</span></span><span class="corr"><span class="zh">第一作者</span><span class="en">First author</span></span><span class="hcp sm"><span class="zh">ESI 高被引</span><span class="en">ESI Highly cited</span></span></div></div></div></div>
+      <div class="yg"><h3 class="yh">2015</h3><div class="yl"><div class="pub"><div><p class="t">Intercellular transfer of messenger RNAs in multiorgan tumorigenesis by tumor cell-derived exosomes</p><p class="m">Molecular Medicine Reports 2015;11:4657–4663 · <a href="https://pubmed.ncbi.nlm.nih.gov/25673258/" target="_blank" rel="noopener">PMID 25673258 ↗</a></p></div><div class="bd"><span class="cn"><b>28</b> <span class="zh">被引</span><span class="en">citations</span></span><span class="corr"><span class="zh">第一作者</span><span class="en">First author</span></span></div></div></div></div>
+      <div class="yg"><h3 class="yh">2014</h3><div class="yl"><div class="pub"><div><p class="t">Restoration of miR17/20a in solid tumor cells enhances the natural killer cell antitumor activity by targeting Mekk2</p><p class="m">Cancer Immunology Research 2014;2(8):789–799 · <a href="https://pubmed.ncbi.nlm.nih.gov/?term=Restoration%20of%20miR17/20a%20in%20solid%20tumor%20cells%20enhances%20the%20natural%20killer%20cell%20antitumor%20activity%20by%20targeting%20Mekk2" target="_blank" rel="noopener"><span class="zh">PubMed 检索</span><span class="en">PubMed search</span> ↗</a></p></div><div class="bd"><span class="cn"><b>42</b> <span class="zh">被引</span><span class="en">citations</span></span><span class="corr"><span class="zh">第一作者</span><span class="en">First author</span></span></div></div><div class="pub"><div><p class="t">Interspecies communication between plant and mouse gut host cells through edible plant derived exosome-like nanoparticles</p><p class="m">Molecular Nutrition &amp; Food Research 2014;58(7):1561–1573 · <a href="https://pubmed.ncbi.nlm.nih.gov/?term=Interspecies%20communication%20between%20plant%20and%20mouse%20gut%20host%20cells%20through%20edible%20plant%20derived%20exosome-like%20nanoparticles" target="_blank" rel="noopener"><span class="zh">PubMed 检索</span><span class="en">PubMed search</span> ↗</a></p></div><div class="bd"><span class="cn"><b>879</b> <span class="zh">被引</span><span class="en">citations</span></span><span class="hcp sm"><span class="zh">ESI 高被引</span><span class="en">ESI Highly cited</span></span></div></div><div class="pub"><div><p class="t">A review: Using nanoparticles to enhance absorption and bioavailability of phenolic phytochemicals</p><p class="m">Food Hydrocolloids 2014 · <a href="https://pubmed.ncbi.nlm.nih.gov/?term=A%20review%3A%20Using%20nanoparticles%20to%20enhance%20absorption%20and%20bioavailability%20of%20phenolic%20phytochemicals" target="_blank" rel="noopener"><span class="zh">PubMed 检索</span><span class="en">PubMed search</span> ↗</a></p></div><div class="bd"><span class="cn"><b>456</b> <span class="zh">被引</span><span class="en">citations</span></span></div></div><div class="pub"><div><p class="t">Quantitatively controlling expression of miR-17∼92 determines colon tumor progression in a mouse tumor model</p><p class="m">The American Journal of Pathology 2014;184(5):1355–1368 · <a href="https://pubmed.ncbi.nlm.nih.gov/?term=Quantitatively%20controlling%20expression%20of%20miR-17%E2%88%BC92%20determines%20colon%20tumor%20progression%20in%20a%20mouse%20tumor%20model" target="_blank" rel="noopener"><span class="zh">PubMed 检索</span><span class="en">PubMed search</span> ↗</a></p></div><div class="bd"><span class="cn"><b>39</b> <span class="zh">被引</span><span class="en">citations</span></span><span class="corr"><span class="zh">第一作者</span><span class="en">First author</span></span></div></div><div class="pub"><div><p class="t">Targeted drug delivery to intestinal macrophages by bioactive nanovesicles released from grapefruit</p><p class="m">Molecular Therapy 2014;22(3):522–534 · <a href="https://pubmed.ncbi.nlm.nih.gov/?term=Targeted%20drug%20delivery%20to%20intestinal%20macrophages%20by%20bioactive%20nanovesicles%20released%20from%20grapefruit" target="_blank" rel="noopener"><span class="zh">PubMed 检索</span><span class="en">PubMed search</span> ↗</a></p></div><div class="bd"><span class="cn"><b>759</b> <span class="zh">被引</span><span class="en">citations</span></span></div></div></div></div>
+      <div class="yg"><h3 class="yh">2013</h3><div class="yl"><div class="pub"><div><p class="t">Grape exosome-like nanoparticles induce intestinal stem cells and protect mice from DSS-induced colitis</p><p class="m">Molecular Therapy 2013;21(7):1345–1357 · <a href="https://pubmed.ncbi.nlm.nih.gov/?term=Grape%20exosome-like%20nanoparticles%20induce%20intestinal%20stem%20cells%20and%20protect%20mice%20from%20DSS-induced%20colitis" target="_blank" rel="noopener"><span class="zh">PubMed 检索</span><span class="en">PubMed search</span> ↗</a></p></div><div class="bd"><span class="cn"><b>1,073</b> <span class="zh">被引</span><span class="en">citations</span></span></div></div><div class="pub"><div><p class="t">Delivery of therapeutic agents by nanoparticles made of grapefruit-derived lipids</p><p class="m">Nature Communications 2013;4(1):1867 · <a href="https://pubmed.ncbi.nlm.nih.gov/?term=Delivery%20of%20therapeutic%20agents%20by%20nanoparticles%20made%20of%20grapefruit-derived%20lipids" target="_blank" rel="noopener"><span class="zh">PubMed 检索</span><span class="en">PubMed search</span> ↗</a></p></div><div class="bd"><span class="cn"><b>651</b> <span class="zh">被引</span><span class="en">citations</span></span></div></div><div class="pub"><div><p class="t">Exosome-like nanoparticles from intestinal mucosal cells carry prostaglandin E<sub>2</sub> and suppress activation of liver NKT cells</p><p class="m">The Journal of Immunology 2013;190(7):3579–3589 · <a href="https://pubmed.ncbi.nlm.nih.gov/?term=Exosome-like%20nanoparticles%20from%20intestinal%20mucosal%20cells%20carry%20prostaglandin%20E2%20and%20suppress%20activation%20of%20liver%20NKT%20cells" target="_blank" rel="noopener"><span class="zh">PubMed 检索</span><span class="en">PubMed search</span> ↗</a></p></div><div class="bd"><span class="cn"><b>101</b> <span class="zh">被引</span><span class="en">citations</span></span></div></div><div class="pub"><div><p class="t">Intestinal mucus-derived nanoparticle–mediated activation of Wnt/β-catenin signaling plays a role in induction of liver natural killer T cell anergy in mice</p><p class="m">Hepatology 2013;57(3):1250–1261 · <a href="https://pubmed.ncbi.nlm.nih.gov/?term=Intestinal%20mucus-derived%20nanoparticle%E2%80%93mediated%20activation%20of%20Wnt/%CE%B2-catenin%20signaling%20plays%20a%20role%20in%20induction%20of%20liver%20natural%20killer%20T%20cell%20anergy%20in%20mice" target="_blank" rel="noopener"><span class="zh">PubMed 检索</span><span class="en">PubMed search</span> ↗</a></p></div><div class="bd"><span class="cn"><b>36</b> <span class="zh">被引</span><span class="en">citations</span></span></div></div><div class="pub"><div><p class="t">Correction: grhl2 determines the epithelial phenotype of breast cancers and promotes tumor progression</p><p class="m">PLoS ONE 2013;8(4) · <a href="https://pubmed.ncbi.nlm.nih.gov/?term=Correction%3A%20grhl2%20determines%20the%20epithelial%20phenotype%20of%20breast%20cancers%20and%20promotes%20tumor%20progression" target="_blank" rel="noopener"><span class="zh">PubMed 检索</span><span class="en">PubMed search</span> ↗</a></p></div><div class="bd"><span class="cn"><b>6</b> <span class="zh">被引</span><span class="en">citations</span></span></div></div></div></div>
+      <div class="yg"><h3 class="yh">2012</h3><div class="yl"><div class="pub"><div><p class="t">Tumor cell cross talk with tumor-associated leukocytes leads to induction of tumor exosomal fibronectin and promotes tumor progression</p><p class="m">The American Journal of Pathology 2012;180:390–398 · <a href="https://pubmed.ncbi.nlm.nih.gov/?term=Tumor%20cell%20cross%20talk%20with%20tumor-associated%20leukocytes%20leads%20to%20induction%20of%20tumor%20exosomal%20fibronectin%20and%20promotes%20tumor%20progression" target="_blank" rel="noopener"><span class="zh">PubMed 检索</span><span class="en">PubMed search</span> ↗</a></p></div><div class="bd"></div></div><div class="pub"><div><p class="t">Grhl2 determines the epithelial phenotype of breast cancers and promotes tumor progression</p><p class="m">PLoS ONE 2012;7:e50781 · <a href="https://pubmed.ncbi.nlm.nih.gov/?term=Grhl2%20determines%20the%20epithelial%20phenotype%20of%20breast%20cancers%20and%20promotes%20tumor%20progression" target="_blank" rel="noopener"><span class="zh">PubMed 检索</span><span class="en">PubMed search</span> ↗</a></p></div><div class="bd"></div></div></div></div>
+      <div class="yg"><h3 class="yh">2011</h3><div class="yl"><div class="pub"><div><p class="t">miR-155 promotes macroscopic tumor formation yet inhibits tumor dissemination from mammary fat pads to the lung by preventing EMT</p><p class="m">Oncogene 2011;30:3440–3453 · <a href="https://pubmed.ncbi.nlm.nih.gov/?term=miR-155%20promotes%20macroscopic%20tumor%20formation%20yet%20inhibits%20tumor%20dissemination%20from%20mammary%20fat%20pads%20to%20the%20lung%20by%20preventing%20EMT" target="_blank" rel="noopener"><span class="zh">PubMed 检索</span><span class="en">PubMed search</span> ↗</a></p></div><div class="bd"></div></div><div class="pub"><div><p class="t">Semi-mature MyD88-silenced bone marrow dendritic cells prolong the allograft survival in a rat model of intestinal transplantation</p><p class="m">Chinese Medical Journal 2011;124:268–272 · <a href="https://pubmed.ncbi.nlm.nih.gov/?term=Semi-mature%20MyD88-silenced%20bone%20marrow%20dendritic%20cells%20prolong%20the%20allograft%20survival%20in%20a%20rat%20model%20of%20intestinal%20transplantation" target="_blank" rel="noopener"><span class="zh">PubMed 检索</span><span class="en">PubMed search</span> ↗</a></p></div><div class="bd"></div></div><div class="pub"><div><p class="t">Exosomes derived from immature bone marrow dendritic cells induce tolerogenicity of intestinal transplantation in rats</p><p class="m">Journal of Surgical Research 2011;171:826–832 · <a href="https://pubmed.ncbi.nlm.nih.gov/?term=Exosomes%20derived%20from%20immature%20bone%20marrow%20dendritic%20cells%20induce%20tolerogenicity%20of%20intestinal%20transplantation%20in%20rats" target="_blank" rel="noopener"><span class="zh">PubMed 检索</span><span class="en">PubMed search</span> ↗</a></p></div><div class="bd"></div></div><div class="pub"><div><p class="t">Express of miR-200 cluster in gastric cancer</p><p class="m">Jiangsu Medical Journal 2011;37:304–306 · <a href="https://pubmed.ncbi.nlm.nih.gov/?term=Express%20of%20miR-200%20cluster%20in%20gastric%20cancer" target="_blank" rel="noopener"><span class="zh">PubMed 检索</span><span class="en">PubMed search</span> ↗</a></p></div><div class="bd"></div></div></div></div>
+      <div class="yg"><h3 class="yh">2010</h3><div class="yl"><div class="pub"><div><p class="t">Exosomes derived from interleukin-10-treated dendritic cells can inhibit trinitrobenzene sulfonic acid-induced rat colitis</p><p class="m">Scandinavian Journal of Gastroenterology 2010;45:1168–1177 · <a href="https://pubmed.ncbi.nlm.nih.gov/?term=Exosomes%20derived%20from%20interleukin-10-treated%20dendritic%20cells%20can%20inhibit%20trinitrobenzene%20sulfonic%20acid-induced%20rat%20colitis" target="_blank" rel="noopener"><span class="zh">PubMed 检索</span><span class="en">PubMed search</span> ↗</a></p></div><div class="bd"></div></div><div class="pub"><div><p class="t">Semi-mature DC induced immune tolerance in rat small bowel transplantation model</p><p class="m">Chinese Journal of Experimental Surgery 2010:760–762 · <a href="https://pubmed.ncbi.nlm.nih.gov/?term=Semi-mature%20DC%20induced%20immune%20tolerance%20in%20rat%20small%20bowel%20transplantation%20model" target="_blank" rel="noopener"><span class="zh">PubMed 检索</span><span class="en">PubMed search</span> ↗</a></p></div><div class="bd"></div></div></div></div>
+      <div class="yg"><h3 class="yh">2009</h3><div class="yl"><div class="pub"><div><p class="t">Short hairpin RNA targeting β-catenin suppresses cell proliferation and induces apoptosis in human gastric carcinoma cells</p><p class="m">Scandinavian Journal of Gastroenterology 2009;44:1452–1462 · <a href="https://pubmed.ncbi.nlm.nih.gov/?term=Short%20hairpin%20RNA%20targeting%20%CE%B2-catenin%20suppresses%20cell%20proliferation%20and%20induces%20apoptosis%20in%20human%20gastric%20carcinoma%20cells" target="_blank" rel="noopener"><span class="zh">PubMed 检索</span><span class="en">PubMed search</span> ↗</a></p></div><div class="bd"><span class="corr"><span class="zh">第一作者</span><span class="en">First author</span></span></div></div></div></div>
+    </div>
+  </div>
+</section>
+
+<section id="contact">
+  <div class="wrap">
+    <div class="sec-head">
+      <h2><span class="zh">联系我们</span><span class="en">Contact</span></h2>
+    </div>
+    <div class="contact">
+      <div class="cbox"><h3><span class="zh">合作与招生</span><span class="en">Collaboration and openings</span></h3>
+        <p><span class="zh">欢迎临床、病理、影像、工程和计算方向的合作，也欢迎博士后、研究生加入。</span>
+           <span class="en">We welcome collaborators in clinical, pathology, imaging, engineering and computation, as well as postdocs and graduate students.</span></p></div>
+      <div class="cbox"><h3><span class="zh">联系方式</span><span class="en">Get in touch</span></h3>
+        <p><span class="zh">单位：四川大学华西医院，成都</span><span class="en">West China Hospital, Sichuan University, Chengdu, China</span></p>
+        <p><span class="zh">邮箱：</span><span class="en">Email: </span><a href="mailto:hongjiang19@126.com">hongjiang19@126.com</a></p>
+        <p><span class="zh">地址：中国四川省成都市武侯区人民南路三段17号四川大学华西医院生物治疗全国重点实验室</span><span class="en">Address: State Key Laboratory of Biotherapy, West China Hospital, Sichuan University, 17 Section 3, Renmin South Road, Wuhou District, Chengdu, Sichuan, China</span></p></div>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>© 2026 <span class="zh">姜红课题组 · 四川大学华西医院</span><span class="en">Jiang Lab · West China Hospital, Sichuan University</span></span>
+    <span><span class="zh">力感知–免疫 · 胰腺癌微环境与免疫治疗</span><span class="en">Mechano-immune tumor microenvironment · pancreatic cancer and immunotherapy</span></span>
+  </div>
+</footer>
+</div>
+
+<script>
+(function(){
+  var app=document.getElementById('app'), doc=document.documentElement;
+  function setLang(l){
+    app.setAttribute('data-lang',l); doc.setAttribute('lang',l==='zh'?'zh-CN':'en');
+    try{localStorage.setItem('lab-lang',l)}catch(e){}
+    document.title=l==='zh'?'姜红课题组 Jiang Lab':'Jiang Lab 姜红课题组';
+    caption();
+  }
+  var saved=null; try{saved=localStorage.getItem('lab-lang')}catch(e){}
+  var viz=document.getElementById('viz'), cap=document.getElementById('vcap');
+  var txt={
+    zh:{stiff:'基质变硬：FAK / PYK2 被激活，抑制性微环境形成，CD8⁺ T 细胞被挡在外面。',soft:'基质松软：力学信号减弱，T 细胞能够进入并接近肿瘤细胞。'},
+    en:{stiff:'Stiff matrix: FAK / PYK2 are activated, an immunosuppressive niche forms, and CD8⁺ T cells are kept out.',soft:'Soft matrix: weaker mechanical signaling lets T cells enter and reach tumor cells.'}
+  };
+  function caption(){if(!cap)return;var l=app.getAttribute('data-lang');cap.textContent=txt[l][viz.getAttribute('data-state')]}
+  viz.querySelectorAll('button').forEach(function(b){
+    b.addEventListener('click',function(){
+      viz.setAttribute('data-state',b.getAttribute('data-s'));
+      viz.querySelectorAll('button').forEach(function(x){x.setAttribute('aria-pressed',x===b?'true':'false')});
+      caption();
+    });
+  });
+  document.getElementById('langBtn').addEventListener('click',function(){
+    setLang(app.getAttribute('data-lang')==='zh'?'en':'zh');
+  });
+  setLang(saved==='en'?'en':'zh');
+})();
+</script>
