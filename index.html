@@ -210,7 +210,7 @@ footer .wrap{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
 }
 </style>
 
-<div id="app" data-lang="zh">
+<div id="app" data-lang="en">
 <header class="top">
   <div class="wrap">
     <a class="brand" href="#top">
@@ -539,6 +539,6 @@ footer .wrap{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
   document.getElementById('langBtn').addEventListener('click',function(){
     setLang(app.getAttribute('data-lang')==='zh'?'en':'zh');
   });
-  setLang(saved==='en'?'en':'zh');
+  setLang(saved==='zh'?'zh':'en');
 })();
 </script>
