@@ -196,6 +196,11 @@ section+section{border-top:1px solid var(--line)}
 .cbox p+p{margin-top:6px}
 footer{border-top:1px solid var(--line);padding-block:32px;color:var(--muted);font-size:.85rem}
 footer .wrap{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+footer .stats{display:inline-flex;align-items:center;gap:8px;flex-basis:100%;font-variant-numeric:tabular-nums}
+footer .stats .dot{width:7px;height:7px;border-radius:50%;background:var(--eosin);animation:pulse 2s ease-in-out infinite}
+footer .stats b{color:var(--ink);font-weight:600}
+@keyframes pulse{50%{opacity:.35}}
+@media (prefers-reduced-motion:reduce){footer .stats .dot{animation:none}}
 
 @media (max-width:860px){
   .hero .wrap,.pi{grid-template-columns:minmax(0,1fr)}
@@ -509,6 +514,10 @@ footer .wrap{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
   <div class="wrap">
     <span>© 2026 <span class="zh">姜红课题组 · 四川大学华西医院</span><span class="en">Jiang Lab · West China Hospital, Sichuan University</span></span>
     <span><span class="zh">力感知–免疫 · 胰腺癌微环境与免疫治疗</span><span class="en">Mechano-immune tumor microenvironment · pancreatic cancer and immunotherapy</span></span>
+    <span class="stats" aria-live="polite"><span class="dot" aria-hidden="true"></span>
+      <span class="zh">总访问量 <b id="busuanzi_value_site_pv">—</b> 次 · 访客 <b id="busuanzi_value_site_uv">—</b> 人</span>
+      <span class="en">Total views <b class="pv">—</b> · Visitors <b class="uv">—</b></span>
+    </span>
   </div>
 </footer>
 </div>
@@ -540,5 +549,21 @@ footer .wrap{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
     setLang(app.getAttribute('data-lang')==='zh'?'en':'zh');
   });
   setLang(saved==='zh'?'zh':'en');
+})();
+</script>
+<script>
+// 实时访问量 (busuanzi): fills the zh counters by id; mirror into the en counters.
+(function(){
+  var pv=document.getElementById('busuanzi_value_site_pv'), uv=document.getElementById('busuanzi_value_site_uv');
+  function fmt(s){var n=parseInt(s,10);return isNaN(n)?s:n.toLocaleString('en-US')}
+  function sync(){
+    document.querySelectorAll('footer .pv').forEach(function(e){e.textContent=fmt(pv.textContent)});
+    document.querySelectorAll('footer .uv').forEach(function(e){e.textContent=fmt(uv.textContent)});
+  }
+  if(window.MutationObserver){var mo=new MutationObserver(sync);[pv,uv].forEach(function(e){mo.observe(e,{childList:true,characterData:true,subtree:true})})}
+  var s=document.createElement('script');s.async=true;
+  s.src='https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js';
+  s.onload=function(){setTimeout(sync,800)};
+  document.body.appendChild(s);
 })();
 </script>
